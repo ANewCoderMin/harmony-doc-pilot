@@ -19,18 +19,15 @@
 - 必须给出证据链：文件路径 + 行号 + 原文片段。
 - 不得臆造 API；不确定时要求打开对应章节确认。
 
-## Setup
-1. 配置文档根目录：`config/harmony-doc-pilot.yaml` 中的 `docs_root`
-2. 安装依赖（venv）：`python3 -m venv .venv && .venv/bin/pip install pyyaml`
-
 ## Workflow
-1. 需要时运行 `hdp_scan.py` 更新 Catalog。
-2. 使用 `hdp_query.py` 进行候选召回，输出 JSON。
-3. Codex 在对话中进行二次筛选与推荐解释。
-4. 如需查看图片，使用 `hdp_open_asset.py` 打开。
+1. 确认 `config/harmony-doc-pilot.yaml` 的 `docs_root` 指向本地文档。
+2. 运行 `hdp_scan.py` 更新 Catalog。
+3. 使用 `hdp_query.py` 输出 JSON（candidates/evidence/assets）。
+4. Codex 在对话中进行二次筛选与推荐解释。
+5. 如需查看图片，使用 `hdp_open_asset.py` 打开。
 
 ## Example
 ```bash
-python3 skills/harmony-doc-pilot/tools/hdp_scan.py --config skills/harmony-doc-pilot/config/harmony-doc-pilot.yaml
-python3 skills/harmony-doc-pilot/tools/hdp_query.py --config skills/harmony-doc-pilot/config/harmony-doc-pilot.yaml --q "ForEach 拖拽排序" --topk 25 --final 6 --with-images
+python3 tools/hdp_scan.py --config config/harmony-doc-pilot.yaml
+python3 tools/hdp_query.py --config config/harmony-doc-pilot.yaml --q "ForEach 拖拽排序" --topk 25 --final 6 --with-images
 ```
