@@ -1,61 +1,44 @@
 # HarmonyDocPilot
 
-本项目提供 HarmonyOS 文档本地检索能力：\n
-- 扫描 Markdown 文档构建 Catalog  
-- 查询候选 API/组件并输出 JSON（含证据与图片路径）  
+HarmonyDocPilot 是一个基于**本地 HarmonyOS Markdown 文档**的检索工具链。它不搬运文档，只读取原文档目录，并把结构化索引保存到本地 SQLite，用于快速召回候选 API/组件与证据链。
 
-目标场景：在 Codex 对话中先用脚本召回候选与证据，再由 Codex 完成二次筛选与总结。
+## 使用流程（最少步骤）
 
-## 目录结构
-- `harmony-doc-pilot/`：Codex skill 目录  
-  - `config/`：配置（设置 docs_root）  
-  - `tools/`：扫描与查询脚本  
-  - `data/`：运行期数据库与缓存（默认不入库）  
-
-## 快速开始
-
-### 1) 配置文档路径
-修改：`harmony-doc-pilot/config/harmony-doc-pilot.yaml`
+### 1) 配置文档根目录
+编辑：`harmony-doc-pilot/config/harmony-doc-pilot.yaml`
 
 ```yaml
 docs_root: /你的/鸿蒙/文档/根目录
 ```
 
-### 2) 准备依赖（推荐 venv）
+### 2) 初始化索引（安装阶段 / 文档更新时）
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install pyyaml
-```
-
-### 3) 构建 Catalog
-```bash
-.venv/bin/python harmony-doc-pilot/tools/hdp_scan.py \
+python3 harmony-doc-pilot/tools/hdp_init.py \
   --config harmony-doc-pilot/config/harmony-doc-pilot.yaml
 ```
 
-### 4) 查询
+### 3) 日常查询（使用阶段）
 ```bash
-.venv/bin/python harmony-doc-pilot/tools/hdp_query.py \
+python3 harmony-doc-pilot/tools/hdp_query.py \
   --config harmony-doc-pilot/config/harmony-doc-pilot.yaml \
   --q "ForEach 拖拽排序" --topk 25 --final 6 --with-images
 ```
 
-## 安装到 Codex
+## 安装方式（可选）
+你可以把 `harmony-doc-pilot/` 作为 Codex skill 目录使用：
+- 全局：`~/.codex/skills/harmony-doc-pilot`（软链）
+- 项目内：`<project>/skills/harmony-doc-pilot`（软链）
 
-### 全局安装（推荐）
-```bash
-mkdir -p ~/.codex/skills
-ln -s /absolute/path/to/harmony-doc-pilot/harmony-doc-pilot ~/.codex/skills/harmony-doc-pilot
-```
+## 文档与索引的存储结构
+- **文档本体**：保持原目录不动（`docs_root` 指向的目录）
+- **索引**：`harmony-doc-pilot/data/catalog.sqlite`
+- **查询缓存**：`harmony-doc-pilot/data/cache/*.json`
 
-### 项目内安装
-```bash
-mkdir -p skills
-ln -s /absolute/path/to/harmony-doc-pilot/harmony-doc-pilot skills/harmony-doc-pilot
-```
+> 索引只保存结构化信息（路径/章节/行号/符号/图片引用），不保存全文。查询时按行号回读原文片段作为证据。
 
-## 运行期产物说明
-以下文件会在运行时产生，不建议纳入版本控制（已在 `.gitignore` 排除）：  
-- `harmony-doc-pilot/data/catalog.sqlite`  
-- `harmony-doc-pilot/data/cache/*.json`  
-- `__pycache__/` 与 `*.pyc`  
+## 输出说明（JSON）
+- `candidates`：候选 API/组件
+- `evidence`：证据片段（路径 + 行号 + 原文）
+- `assets`：图片路径（可选）
+- `stats`：统计信息
+

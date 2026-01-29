@@ -8,7 +8,7 @@
 - 可选约束：系统应用/权限/版本/能力集
 
 ## Tooling
-- `tools/hdp_scan.py`：扫描/增量更新本地文档 Catalog
+- `tools/hdp_init.py`：安装/更新时生成索引（Catalog）
 - `tools/hdp_query.py`：查询候选并输出 JSON（含证据与图片）
 - `tools/hdp_open_asset.py`：macOS 打开图片（可选）
 
@@ -21,7 +21,7 @@
 
 ## Workflow
 1. 确认 `config/harmony-doc-pilot.yaml` 的 `docs_root` 指向本地文档。
-2. 运行 `hdp_init.py` 生成/更新 Catalog（安装或文档更新时执行一次）。
+2. 运行 `hdp_init.py` 生成/更新索引（安装阶段或文档更新时执行一次）。
 3. 使用 `hdp_query.py` 输出 JSON（candidates/evidence/assets）。
 4. Codex 在对话中进行二次筛选与推荐解释。
 5. 如需查看图片，使用 `hdp_open_asset.py` 打开。
