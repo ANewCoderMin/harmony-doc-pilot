@@ -1,0 +1,27 @@
+# docs_root 指向本地鸿蒙中文文档根目录
+docs_root: /Users/min/IdeaProjects/harmony/docs/zh-cn
+
+include_scopes:
+  - application-dev/reference
+  - application-dev/ui
+
+exclude_scopes:
+  - release-notes
+  - api-diff
+
+asset_extensions:
+  - .png
+  - .jpg
+  - .jpeg
+  - .gif
+  - .webp
+  - .svg
+
+text_extensions:
+  - .md
+  - .markdown
+
+ripgrep:
+  context_lines: 30
+  max_hits_per_file: 20
+  max_files: 200
