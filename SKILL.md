@@ -17,13 +17,13 @@ description: Use when 需要在本地 HarmonyOS Markdown 文档中进行检索�
 
 ## Core Pattern
 **原则：脚本只做检索与证据，LLM 不进入脚本。**
-- 先扫描：`hdp_scan.py` 生成/更新 Catalog
+- 先初始化：`hdp_init.py` 生成/更新 Catalog（安装或文档更新时执行）
 - 再查询：`hdp_query.py` 输出 JSON（candidates/evidence/assets）
 - 最后在对话中做二次筛选与总结
 
 ## Quick Reference
 - 配置：`config/harmony-doc-pilot.yaml` 的 `docs_root`
-- 扫描：`python3 tools/hdp_scan.py --config config/harmony-doc-pilot.yaml`
+- 初始化：`python3 tools/hdp_init.py --config config/harmony-doc-pilot.yaml`
 - 查询：`python3 tools/hdp_query.py --config config/harmony-doc-pilot.yaml --q "..." --topk 25 --final 6 --with-images`
 
 ## Implementation
@@ -35,8 +35,8 @@ python3 tools/hdp_query.py \
 ```
 
 ## Common Mistakes
-- 忘记设置 `docs_root` 导致扫描/查询为空
-- 扫描未更新就直接查询
+- 忘记设置 `docs_root` 导致初始化/查询为空
+- 未运行初始化就直接查询
 - 直接给出推荐而不提供证据链
 
 ## Rationalization Table

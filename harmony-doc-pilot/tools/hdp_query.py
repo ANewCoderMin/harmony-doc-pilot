@@ -203,6 +203,28 @@ def _rg_candidates(config: Dict, keywords: List[str]) -> List[Dict]:
     return candidates
 
 
+def _ensure_catalog() -> None:
+    db_path = _db_path()
+    if not os.path.exists(db_path):
+        raise RuntimeError("catalog.sqlite 不存在，请先运行 tools/hdp_init.py 初始化索引")
+
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='symbols'")
+        row = cur.fetchone()
+        if not row:
+            conn.close()
+            raise RuntimeError("catalog.sqlite 不完整，请先运行 tools/hdp_init.py 重新初始化索引")
+        cur.execute("SELECT COUNT(1) FROM symbols")
+        count = cur.fetchone()[0]
+        conn.close()
+        if count == 0:
+            raise RuntimeError("catalog.sqlite 为空，请先运行 tools/hdp_init.py 初始化索引")
+    except sqlite3.DatabaseError as exc:
+        raise RuntimeError("catalog.sqlite 已损坏，请先运行 tools/hdp_init.py 重新初始化索引") from exc
+
+
 def _load_sections_for_path(conn: sqlite3.Connection, path: str) -> List[Dict]:
     cur = conn.cursor()
     cur.execute(
@@ -254,6 +276,7 @@ def _load_assets(conn: sqlite3.Connection, section_id: Optional[int]) -> List[Di
 def query(config_path: str, q: str, topk: int, final: int, with_images: bool) -> Dict:
     config = load_config(config_path)
     docs_root = norm_path(config["docs_root"])
+    _ensure_catalog()
     keywords = _tokenize(q)
     start = time.time()
 
